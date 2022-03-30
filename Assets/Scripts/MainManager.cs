@@ -11,6 +11,7 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text BestScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -22,6 +23,9 @@ public class MainManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        BestScoreText.text = "Best Score : " + MenuManager.menuManager.highScoreName + " : " +
+            MenuManager.menuManager.highScore;
+        ScoreText.text = MenuManager.menuManager.currentPlayerName + "'s Score : 0";
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -58,18 +62,34 @@ public class MainManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-            }
+            } else if(Input.GetKeyDown(KeyCode.Q))
+            {
+                MenuManager.menuManager.Exit();
+            }/*
+            else if (Input.GetKeyDown(KeyCode.M))
+            {
+                MenuManager.menuManager.SaveHighScore();
+                SceneManager.LoadScene(0);
+                MenuManager.menuManager.LoadHighScore();
+            }*/
         }
     }
 
     void AddPoint(int point)
     {
         m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        ScoreText.text = MenuManager.menuManager.currentPlayerName + "'s Score : " + m_Points;
     }
 
     public void GameOver()
     {
+        if (m_Points > MenuManager.menuManager.highScore)
+        {
+            MenuManager.menuManager.highScore = m_Points;
+            MenuManager.menuManager.highScoreName = MenuManager.menuManager.currentPlayerName;
+            BestScoreText.text = "Best Score : " + MenuManager.menuManager.highScoreName + " : " +
+                MenuManager.menuManager.highScore;
+        }
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
